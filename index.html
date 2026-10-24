@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>旅遊盲盒</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: 左欄是設定卡，右欄是禮物盒舞台與抽出的車票；手機上依序縱向堆疊 */
+:root {
+  --bg: #FBF1F3;
+  --bg-glow: #F8DCE4;
+  --surface: #FFFFFF;
+  --surface-2: #FDF6F8;
+  --ink: #3A2230;
+  --muted: #86697A;
+  --line: #EED9DF;
+  --rose: #D24F78;
+  --rose-ink: #FFFFFF;
+  --rose-soft: #FBE1E9;
+  --box: #F4AFC0;
+  --box-lid: #EE97AD;
+  --box-shade: #DD7D97;
+  --ribbon: #FFF3D8;
+  --ribbon-shade: #EFD9A8;
+  --sea: #3A82BC;
+  --mtn: #46906A;
+  --city: #D2733A;
+  --cult: #855FBF;
+  --warn: #B4620F;
+  --shadow: 0 14px 34px -16px rgba(122, 38, 70, .28);
+  --f-display: "Huninn", "PingFang TC", "Noto Sans TC", sans-serif;
+  --f-note: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "PingFang TC", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --r-lg: 22px;
+  --r-md: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1C1317; --bg-glow: #34202A; --surface: #261A20; --surface-2: #2C1F26;
+    --ink: #F6E7EC; --muted: #BFA1B0; --line: #3F2C35;
+    --rose: #F07D9E; --rose-ink: #2A0E19; --rose-soft: #40222F;
+    --box: #E592A8; --box-lid: #D87D95; --box-shade: #B4607A; --ribbon: #F7E5BD; --ribbon-shade: #D6BC86;
+    --sea: #72B3E6; --mtn: #7FC69E; --city: #F2A26C; --cult: #B99BEC; --warn: #F0B261;
+    --shadow: 0 14px 34px -16px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1C1317; --bg-glow: #34202A; --surface: #261A20; --surface-2: #2C1F26;
+  --ink: #F6E7EC; --muted: #BFA1B0; --line: #3F2C35;
+  --rose: #F07D9E; --rose-ink: #2A0E19; --rose-soft: #40222F;
+  --box: #E592A8; --box-lid: #D87D95; --box-shade: #B4607A; --ribbon: #F7E5BD; --ribbon-shade: #D6BC86;
+  --sea: #72B3E6; --mtn: #7FC69E; --city: #F2A26C; --cult: #B99BEC; --warn: #F0B261;
+  --shadow: 0 14px 34px -16px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, var(--bg-glow), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 30%, var(--bg-glow), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-radius: 8px; }
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- 標題 ---------- */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.brand { display: flex; flex-direction: column; gap: 2px; }
+.brand h1 {
+  margin: 0; font-family: var(--f-display); font-weight: 400;
+  font-size: clamp(34px, 7vw, 46px); line-height: 1.1; letter-spacing: .04em;
+  display: flex; align-items: center; gap: 10px;
+}
+.brand h1 svg { width: .62em; height: .62em; color: var(--rose); flex: none; transform: translateY(-2px) rotate(-8deg); }
+.brand p { margin: 0; font-family: var(--f-note); font-size: 17px; color: var(--muted); }
+.today {
+  font-family: var(--f-note); font-size: 15px; color: var(--muted);
+  border: 1.5px dashed var(--line); border-radius: 999px; padding: 4px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- 設定卡 ---------- */
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 20px;
+}
+@media (min-width: 861px) { .panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); } }
+.field { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.label {
+  font-size: 12px; font-weight: 700; letter-spacing: .14em; color: var(--muted);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+
+.origin { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface-2); border: 1px solid var(--line); }
+.origin .pin { width: 36px; height: 36px; border-radius: 50%; background: var(--rose-soft); color: var(--rose); display: grid; place-items: center; flex: none; }
+.origin .pin svg { width: 18px; height: 18px; }
+.origin .txt { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.35; }
+.origin strong { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.origin .note { font-size: 12.5px; color: var(--muted); }
+.link-btn { background: none; border: 0; color: var(--rose); font-weight: 700; padding: 6px 4px; flex: none; }
+.link-btn:hover { text-decoration: underline; }
+
+.origin-panel { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: var(--r-md); border: 1.5px dashed var(--line); }
+.origin-panel label { font-size: 13px; color: var(--muted); }
+.row { display: flex; gap: 8px; min-width: 0; }
+.input, .select {
+  width: 100%; min-width: 0; padding: 9px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); font-size: 15px;
+}
+.input:focus, .select:focus { border-color: var(--rose); outline: none; box-shadow: 0 0 0 3px var(--rose-soft); }
+.hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.msg { margin: 0; font-size: 13px; color: var(--rose); min-height: 0; }
+.msg:empty { display: none; }
+.gh-tip { margin: 0; font-size: 13px; line-height: 1.5; padding: 10px 12px; border-radius: 10px; background: var(--rose-soft); }
+.gh-tip a { color: var(--rose); font-weight: 700; }
+
+.btn-ghost {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 10px;
+  padding: 9px 14px; font-weight: 500; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+}
+.btn-ghost:hover { border-color: var(--rose); color: var(--rose); }
+.btn-ghost svg { width: 16px; height: 16px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.seg button {
+  border: 0; background: transparent; border-radius: 999px; padding: 8px 10px; font-weight: 500;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted);
+  transition: background .2s, color .2s;
+}
+.seg button svg { width: 16px; height: 16px; }
+.seg button[aria-checked="true"] { background: var(--rose); color: var(--rose-ink); box-shadow: 0 4px 12px -6px var(--rose); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 6px 13px; font-size: 14px; transition: border-color .15s, background .15s, color .15s;
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover { border-color: var(--rose); }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); font-weight: 700; }
+
+.custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.custom .input { width: 84px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.cats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cat {
+  --c: var(--rose);
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r-md);
+  border: 1.5px solid var(--line); background: var(--surface); text-align: left; min-width: 0;
+  transition: border-color .15s, background .15s;
+}
+.cat .ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; flex: none;
+  background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--c); }
+.cat .ic svg { width: 18px; height: 18px; }
+.cat .t { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.cat .t b { font-weight: 700; font-size: 14px; }
+.cat .t small { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cat[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 7%, var(--surface)); }
+.cat[aria-pressed="false"] { opacity: .55; }
+.cat[aria-pressed="false"] .ic { filter: grayscale(1); }
+
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+.switch .t { display: flex; flex-direction: column; line-height: 1.35; }
+.switch .t b { font-weight: 500; font-size: 14.5px; }
+.switch .t small { font-size: 12.5px; color: var(--muted); }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.track { width: 44px; height: 26px; border-radius: 999px; background: var(--line); position: relative; flex: none; transition: background .2s; }
+.track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.switch input:checked + .track { background: var(--rose); }
+.switch input:checked + .track::after { transform: translateX(18px); }
+.switch input:focus-visible + .track { outline: 3px solid var(--rose); outline-offset: 2px; }
+
+/* ---------- 舞台 ---------- */
+.stage-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.stage {
+  position: relative; overflow: hidden; border-radius: 28px; border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--box) 32%, transparent), transparent 55%),
+    var(--surface);
+  box-shadow: var(--shadow);
+  padding-block: 28px 24px;
+  padding-inline: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.stage .float { position: absolute; color: var(--box); opacity: .55; animation: drift 7s ease-in-out infinite; pointer-events: none; }
+.stage .float svg { width: 100%; height: 100%; }
+@keyframes drift { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 8deg)); } }
+
+.pool {
+  font-family: var(--f-note); font-size: 18px; text-align: center; margin: 0;
+}
+.pool b { font-family: var(--f-display); font-weight: 400; font-size: 30px; color: var(--rose); padding: 0 4px; font-variant-numeric: tabular-nums; }
+.route-status { margin: -10px 0 0; font-size: 12.5px; color: var(--muted); text-align: center; display: flex; align-items: center; gap: 6px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.ok { background: var(--mtn); }
+.dot.loading { background: var(--city); animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+
+/* 禮物盒 */
+.giftzone { position: relative; width: 220px; height: 210px; display: grid; place-items: end center; }
+.glow { position: absolute; left: 50%; top: 55%; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ribbon) 90%, transparent) 0%, transparent 65%); transform: scale(0); opacity: 0; pointer-events: none; }
+.gift { position: relative; width: 176px; height: 168px; background: none; border: 0; padding: 0; animation: bob 3.2s ease-in-out infinite; }
+.gift:disabled { cursor: default; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.gift .shadow { position: absolute; left: 14px; right: 14px; bottom: -14px; height: 14px; border-radius: 50%; background: color-mix(in srgb, var(--box-shade) 30%, transparent); filter: blur(2px); }
+.gift .body {
+  position: absolute; left: 10px; right: 10px; bottom: 0; height: 108px; border-radius: 10px 10px 18px 18px;
+  background: linear-gradient(90deg, var(--box-shade) 0 6%, var(--box) 6% 94%, var(--box-shade) 94%);
+}
+.gift .body::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 26px; margin-left: -13px; background: linear-gradient(90deg, var(--ribbon-shade) 0 18%, var(--ribbon) 18% 82%, var(--ribbon-shade) 82%); }
+.gift .q { position: absolute; left: 22px; bottom: 18px; font-family: var(--f-display); font-size: 34px; line-height: 1; color: var(--ribbon); transform: rotate(-10deg); }
+.gift .q2 { left: auto; right: 24px; bottom: 44px; font-size: 22px; transform: rotate(12deg); }
+.gift .lid {
+  position: absolute; left: 0; right: 0; top: 34px; height: 36px; border-radius: 10px;
+  background: var(--box-lid); box-shadow: 0 6px 0 -2px color-mix(in srgb, var(--box-shade) 70%, transparent);
+  transform-origin: 30% 100%;
+}
+.gift .lid::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 30px; margin-left: -15px; background: linear-gradient(90deg, var(--ribbon-shade) 0 16%, var(--ribbon) 16% 84%, var(--ribbon-shade) 84%); }
+.bow { position: absolute; left: 50%; top: -30px; width: 0; height: 0; }
+.bow i { position: absolute; width: 46px; height: 34px; border: 9px solid var(--ribbon); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; top: 2px; }
+.bow i:first-child { right: 2px; transform: rotate(-22deg); }
+.bow i:last-child { left: 2px; transform: rotate(22deg); }
+.bow b { position: absolute; left: -11px; top: 16px; width: 22px; height: 18px; border-radius: 8px; background: var(--ribbon-shade); }
+
+.gift.shake { animation: shake .9s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  0% { transform: rotate(0); } 10% { transform: rotate(-7deg) translateY(-2px); } 20% { transform: rotate(7deg); }
+  30% { transform: rotate(-9deg) translateY(-4px); } 40% { transform: rotate(9deg); } 50% { transform: rotate(-6deg); }
+  60% { transform: rotate(6deg) translateY(-6px); } 70% { transform: rotate(-3deg); } 85% { transform: scale(1.06, .94); } 100% { transform: scale(1); }
+}
+.gift.open .lid { animation: lidoff .7s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes lidoff { to { transform: translate(-30px, -90px) rotate(-28deg); opacity: 0; } }
+.giftzone.open .glow { animation: glow .9s ease-out forwards; }
+@keyframes glow { 0% { transform: scale(.2); opacity: 0; } 40% { opacity: 1; } 100% { transform: scale(1.1); opacity: 0; } }
+.gift.reset .lid { animation: lidback .5s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes lidback { from { transform: translateY(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.burst { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; pointer-events: none; color: var(--c, var(--rose));
+  animation: fly 1.1s cubic-bezier(.15,.7,.3,1) forwards; }
+.burst svg { width: 100%; height: 100%; }
+@keyframes fly { 0% { transform: translate(-50%, -50%) scale(.3); opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1); opacity: 0; } }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.btn-main {
+  border: 0; border-radius: 999px; padding: 14px 30px; min-width: 200px;
+  background: var(--rose); color: var(--rose-ink); font-family: var(--f-display); font-size: 19px; letter-spacing: .08em;
+  box-shadow: 0 10px 22px -10px var(--rose); transition: transform .15s, box-shadow .15s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -10px var(--rose); }
+.btn-main:active { transform: translateY(1px); }
+.btn-sub {
+  border: 1.5px solid var(--rose); border-radius: 999px; padding: 12px 22px; background: var(--surface);
+  color: var(--rose); font-family: var(--f-display); font-size: 17px; letter-spacing: .06em;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-sub:hover { background: var(--rose-soft); }
+.btn-main svg, .btn-sub svg { width: 18px; height: 18px; }
+.btn-main:disabled, .btn-sub:disabled { opacity: .5; cursor: default; transform: none; }
+.empty-msg { margin: 0; font-size: 14px; color: var(--rose); text-align: center; }
+.empty-msg:empty { display: none; }
+
+/* ---------- 車票 ---------- */
+.results { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.results-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.results-head h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 24px; text-wrap: balance; }
+.results-head p { margin: 0; font-family: var(--f-note); color: var(--muted); font-size: 15px; }
+
+.ticket {
+  --c: var(--rose);
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 170px;
+  background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--line);
+  animation: rise .55s cubic-bezier(.2,.9,.3,1.2) both; transition: opacity .3s, transform .3s, filter .3s;
+}
+.ticket:nth-child(2) { animation-delay: .08s; } .ticket:nth-child(3) { animation-delay: .16s; } .ticket:nth-child(4) { animation-delay: .24s; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px) scale(.96); } to { opacity: 1; transform: none; } }
+.ticket::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 6px; border-radius: 20px 20px 0 0; background: var(--c); }
+.t-main { padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.t-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--c);
+  background: color-mix(in srgb, var(--c) 13%, var(--surface)); border-radius: 999px; padding: 3px 10px 3px 8px; letter-spacing: .04em; }
+.pill svg { width: 14px; height: 14px; }
+.t-no { font-size: 11.5px; letter-spacing: .16em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.t-name { margin: 2px 0 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 5vw, 32px); line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
+.t-place { margin: 0; font-size: 13.5px; color: var(--muted); letter-spacing: .06em; }
+.t-desc { margin: 4px 0 0; font-family: var(--f-note); font-size: 17px; line-height: 1.65; max-width: 34em; }
+.t-tip { margin: 2px 0 0; font-size: 13px; color: var(--warn); display: flex; gap: 6px; align-items: flex-start; }
+.t-tip svg { width: 15px; height: 15px; flex: none; margin-top: 3px; }
+.t-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.t-btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink);
+}
+.t-btn svg { width: 15px; height: 15px; }
+.t-btn:hover { border-color: var(--c); color: var(--c); }
+.t-btn.primary { background: var(--c); border-color: var(--c); color: var(--surface); }
+.t-btn.primary:hover { color: var(--surface); filter: brightness(1.06); }
+.t-btn.done { background: color-mix(in srgb, var(--mtn) 14%, var(--surface)); border-color: var(--mtn); color: var(--mtn); }
+
+.t-stub {
+  position: relative; padding: 22px 18px 18px; display: flex; flex-direction: column; gap: 12px; justify-content: center;
+  border-left: 2px dashed var(--line); background: color-mix(in srgb, var(--c) 5%, var(--surface)); border-radius: 0 20px 20px 0;
+}
+.t-stub::before, .t-stub::after { content: ""; position: absolute; left: -12px; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); }
+.t-stub::before { top: -12px; clip-path: inset(50% 0 0 0); }
+.t-stub::after { bottom: -12px; clip-path: inset(0 0 50% 0); }
+.t-stat { display: flex; flex-direction: column; line-height: 1.2; }
+.t-stat span { font-size: 11.5px; letter-spacing: .16em; color: var(--muted); }
+.t-stat b { font-family: var(--f-display); font-weight: 400; font-size: 22px; font-variant-numeric: tabular-nums; }
+.t-stat b.big { color: var(--c); font-size: 26px; }
+.t-src { font-size: 11.5px; color: var(--muted); }
+.t-date { font-family: var(--f-note); font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 560px) {
+  .ticket { grid-template-columns: minmax(0, 1fr); }
+  .t-stub { border-left: 0; border-top: 2px dashed var(--line); border-radius: 0 0 20px 20px; flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 10px 22px; }
+  .t-stub::before { top: -12px; left: -12px; clip-path: inset(0 0 0 50%); }
+  .t-stub::after { top: -12px; bottom: auto; left: auto; right: -12px; clip-path: inset(0 50% 0 0); }
+  .t-date { flex-basis: 100%; }
+}
+.ticket.chosen { box-shadow: 0 0 0 3px var(--c), var(--shadow); }
+.ticket.dim { opacity: .45; filter: saturate(.4); transform: scale(.98); }
+.chosen-badge { display: none; }
+.ticket.chosen .chosen-badge {
+  display: inline-flex; position: absolute; top: -12px; right: 18px; background: var(--c); color: var(--surface);
+  font-family: var(--f-display); font-size: 14px; border-radius: 999px; padding: 3px 12px; align-items: center; gap: 5px; z-index: 1;
+}
+.chosen-badge svg { width: 14px; height: 14px; }
+
+/* ---------- 足跡 ---------- */
+.footprints { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 4px 18px; }
+.footprints summary { list-style: none; cursor: pointer; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.footprints summary::-webkit-details-marker { display: none; }
+.footprints summary h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.footprints summary h2 svg { width: 20px; height: 20px; color: var(--rose); }
+.footprints summary .cnt { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.footprints summary .chev { width: 18px; height: 18px; color: var(--muted); transition: transform .2s; }
+.footprints[open] summary .chev { transform: rotate(180deg); }
+.fp-body { padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+.bar { height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--rose); border-radius: 999px; transition: width .4s; }
+.fp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.fp-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); min-width: 0; }
+.fp-list li:last-child { border-bottom: 0; }
+.fp-list .sw { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.fp-list .nm { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.fp-list .dt { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fp-list button { border: 0; background: none; color: var(--muted); padding: 4px; border-radius: 6px; display: grid; place-items: center; }
+.fp-list button:hover { color: var(--rose); }
+.fp-list button svg { width: 16px; height: 16px; }
+.fp-empty { margin: 0; font-family: var(--f-note); font-size: 15px; color: var(--muted); }
+.fp-foot { display: flex; justify-content: flex-end; }
+.danger { color: var(--rose); }
+
+.foot { margin-top: 30px; font-size: 12.5px; color: var(--muted); text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.6-10-9.3C.3 8.4 2.2 4.5 6 4.5c2.2 0 3.5 1.2 4.2 2.3h.1c.2-.4.6-.9 1.7-1.6C12.7 4.7 13.5 4.5 14 4.5h4c3.8 0 5.7 3.9 4 7.2C19.5 16.4 12 21 12 21z"/></symbol>
+    <symbol id="i-sea" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M2 9c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 19c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></symbol>
+    <symbol id="i-mtn" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M2 20 9 8l4 6 3-4 6 10zM7.3 11l1.7 1.5 1.6-1.5"/></symbol>
+    <symbol id="i-city" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M3 21h18M5 21V9l5-3v15M10 21V4h6v17M16 21v-9h4v9M13 8v.01M13 12v.01M13 16v.01"/></symbol>
+    <symbol id="i-cult" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M3 9l9-5 9 5zM5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 21h18M4 18h16"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M5 17H3v-5l2-5h14l2 5v5h-2M5 12h14M7.5 17a1.5 1.5 0 1 0 0 .01M16.5 17a1.5 1.5 0 1 0 0 .01M9 17h6"/></symbol>
+    <symbol id="i-road" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M7 3 3 21M17 3l4 18M12 4v3M12 11v3M12 18v3"/></symbol>
+    <symbol id="i-nav" viewBox="0 0 24 24"><path fill="currentColor" d="M21 3 3 10.5l7.5 3 3 7.5z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v3M12 19v3M2 12h3M19 12h3M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13.5a1.5 1.5 0 1 0 0-3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3 2 20h20zM12 10v4M12 17v.01"/></symbol>
+    <symbol id="i-three" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 7h5v12H3zM9.5 5h5v14h-5zM16 7h5v12h-5z"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3.5 7.5 8 12 8zM12 8s1.5-5 4-4.5S16.5 8 12 8z"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-steps" viewBox="0 0 24 24"><path fill="currentColor" d="M8 3c2 0 3 2 3 4.5S10 13 8 13 5 10 5 7.5 6 3 8 3zM6 14.5h4l-.3 2.5a2 2 0 0 1-3.4 0zM16 7c2 0 3 2 3 4.5S18 17 16 17s-3-3-3-5.5S14 7 16 7zM14 18.5h4l-.3 2.5a2 2 0 0 1-3.4 0z"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="head">
+    <div class="brand">
+      <h1>旅遊盲盒 <svg aria-hidden="true"><use href="#i-heart"/></svg></h1>
+      <p>假日不知道去哪？打開盒子，看看今天要去哪裡。</p>
+    </div>
+    <span class="today" id="today"></span>
+  </header>
+
+  <div class="grid">
+    <!-- 設定 -->
+    <section class="panel" aria-label="抽籤設定">
+      <div class="field">
+        <div class="label">出發地</div>
+        <div class="origin">
+          <span class="pin"><svg aria-hidden="true"><use href="#i-pin"/></svg></span>
+          <span class="txt"><strong id="originName">高科大楠梓校區</strong><span class="note" id="originNote">預設出發地</span></span>
+          <button class="link-btn" id="originToggle" aria-expanded="false" aria-controls="originPanel">更換</button>
+        </div>
+        <div class="origin-panel" id="originPanel" hidden>
+          <button class="btn-ghost" id="useGps"><svg aria-hidden="true"><use href="#i-gps"/></svg>使用我目前的位置</button>
+          <label for="originCounty">選擇縣市與鄉鎮區</label>
+          <div class="row">
+            <select class="select" id="originCounty" aria-label="縣市"></select>
+            <select class="select" id="originTown" aria-label="鄉鎮區"></select>
+          </div>
+          <label for="originPreset">常用地點</label>
+          <select class="select" id="originPreset"></select>
+          <label for="originCoords">或貼上座標</label>
+          <div class="row">
+            <input class="input" id="originCoords" inputmode="decimal" placeholder="例如 22.7263, 120.3149" autocomplete="off">
+            <button class="btn-ghost" id="applyCoords">套用</button>
+          </div>
+          <p class="hint">在 Google 地圖上長按（電腦按右鍵）任一地點，就能複製它的座標。</p>
+          <p class="msg" id="originMsg" role="status"></p>
+          <p class="gh-tip" id="ghTip" hidden>想要自動定位、車程也依實際道路計算？用手機瀏覽器打開 <a id="ghLink" target="_blank" rel="noopener">GitHub 版旅遊盲盒</a>。</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label">抽籤依據</div>
+        <div class="seg" role="radiogroup" aria-label="抽籤依據">
+          <button role="radio" id="modeTime" data-mode="time" aria-checked="true"><svg aria-hidden="true"><use href="#i-car"/></svg>車程</button>
+          <button role="radio" id="modeDist" data-mode="dist" aria-checked="false"><svg aria-hidden="true"><use href="#i-road"/></svg>行駛距離</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span id="rangeLabel">車程範圍</span></div>
+        <div class="chips" id="rangeChips" role="radiogroup" aria-label="範圍"></div>
+        <div class="custom" id="customRange" hidden>
+          <span>最少</span>
+          <input class="input" id="customMin" type="number" min="0" step="10" inputmode="numeric" aria-label="最少">
+          <span>～ 最多</span>
+          <input class="input" id="customMax" type="number" min="0" step="10" inputmode="numeric" aria-label="最多" placeholder="不限">
+          <span id="customUnit">分鐘</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label">想去哪一種地方<button class="link-btn" id="catsAll" style="font-size:12px;letter-spacing:0">全選</button></div>
+        <div class="cats" id="cats"></div>
+      </div>
+
+      <div class="field">
+        <label class="switch" for="rain">
+          <span class="t"><b>雨天模式</b><small>只抽室內景點，例如博物館、百貨</small></span>
+          <input type="checkbox" id="rain"><span class="track" aria-hidden="true"></span>
+        </label>
+        <label class="switch" for="exVisited">
+          <span class="t"><b>排除去過的地方</b><small>在「我們的足跡」裡的景點不會被抽到</small></span>
+          <input type="checkbox" id="exVisited" checked><span class="track" aria-hidden="true"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 舞台與結果 -->
+    <div class="stage-col">
+      <section class="stage" aria-label="盲盒">
+        <span class="float" style="left:9%;top:14%;width:20px;height:20px;--r:-14deg"><svg><use href="#i-heart"/></svg></span>
+        <span class="float" style="right:11%;top:22%;width:14px;height:14px;--r:12deg;animation-delay:-2s"><svg><use href="#i-heart"/></svg></span>
+        <span class="float" style="left:16%;bottom:28%;width:12px;height:12px;--r:20deg;animation-delay:-4s"><svg><use href="#i-heart"/></svg></span>
+        <span class="float" style="right:18%;bottom:34%;width:18px;height:18px;--r:-6deg;animation-delay:-1s"><svg><use href="#i-heart"/></svg></span>
+
+        <p class="pool" aria-live="polite">盒子裡有<b id="poolCount">0</b>個地點</p>
+        <p class="route-status" id="routeStatus"><span class="dot" id="routeDot"></span><span id="routeText">準備中</span></p>
+
+        <div class="giftzone" id="giftzone">
+          <div class="glow"></div>
+          <button class="gift" id="gift" aria-label="打開盲盒">
+            <span class="shadow"></span>
+            <span class="body"><span class="q">?</span><span class="q q2">?</span></span>
+            <span class="lid"><span class="bow"><i></i><i></i><b></b></span></span>
+          </button>
+        </div>
+
+        <div class="actions">
+          <button class="btn-main" id="drawOne"><svg aria-hidden="true"><use href="#i-gift"/></svg>打開盲盒</button>
+          <button class="btn-sub" id="drawThree"><svg aria-hidden="true"><use href="#i-three"/></svg>抽三選一</button>
+        </div>
+        <p class="empty-msg" id="emptyMsg" role="status"></p>
+      </section>
+
+      <section class="results" id="results" aria-live="polite" hidden>
+        <div class="results-head"><h2 id="resultsTitle"></h2><p id="resultsSub"></p></div>
+        <div class="results" id="tickets"></div>
+      </section>
+
+      <details class="footprints" id="footprints">
+        <summary>
+          <h2><svg aria-hidden="true"><use href="#i-steps"/></svg>我們的足跡</h2>
+          <span style="display:flex;align-items:center;gap:8px"><span class="cnt" id="fpCount"></span><svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg></span>
+        </summary>
+        <div class="fp-body">
+          <div class="bar" aria-hidden="true"><i id="fpBar" style="width:0"></i></div>
+          <ul class="fp-list" id="fpList"></ul>
+          <p class="fp-empty" id="fpEmpty">還沒有紀錄。抽到喜歡的地方、去過之後，在車票上按「我們去過了」就會記在這裡。</p>
+          <div class="fp-foot"><button class="link-btn danger" id="fpClear" hidden>清除全部紀錄</button></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <p class="foot" id="foot">共收錄 142 個台灣本島景點。車程為參考值，出發前請以導航的即時路況為準。</p>
+</div>
+
+<script>
+(() => {
+"use strict";
+// [名稱, 類別, 縣市, 區域, 緯度, 經度, 區塊(W 西部 / Y 宜蘭 / E 花東), 末段山路公里, 是否室內, 介紹, 提醒, 導航關鍵字]
+const RAW = [["和平島地質公園","sea","基隆市","中正區",25.1605,121.7637,"W",0,0,"奇岩海蝕地形配上無邊際海水池，基隆最美的海岸散步路線。","","和平島地質公園"],["野柳地質公園","sea","新北市","萬里區",25.2066,121.6905,"W",0,0,"女王頭、仙女鞋等奇岩，北海岸經典的地質奇景。","","野柳地質公園"],["深澳象鼻岩","sea","新北市","瑞芳區",25.1328,121.8199,"W",0,0,"像大象把鼻子伸進海裡的奇岩，傍晚的海天色很浪漫。","岩岸濕滑，請穿好走的鞋","象鼻岩"],["福隆海水浴場","sea","新北市","貢寮區",25.0219,121.9447,"W",0,0,"金黃沙灘與彩虹橋，夏天還有沙雕季，順便吃福隆便當。","","福隆海水浴場"],["淡水漁人碼頭","sea","新北市","淡水區",25.183,121.4108,"W",0,0,"走上情人橋看夕陽，北台灣最有名的約會海景。","","淡水漁人碼頭"],["南寮漁港","sea","新竹市","北區",24.8484,120.9268,"W",0,0,"大草皮放風箏、吹海風，還有魚鱗天梯可以拍照。","","南寮漁港"],["好望角","sea","苗栗縣","後龍鎮",24.5976,120.7311,"W",0,0,"高處俯瞰海線與一整排白色風車，視野超開闊。","風很大，記得帶外套","好望角 後龍"],["外澳海灘","sea","宜蘭縣","頭城鎮",24.8757,121.8417,"Y",0,0,"正對龜山島的黑沙灘，看衝浪、喝咖啡的悠閒海邊。","","外澳海灘"],["七星潭","sea","花蓮縣","新城鄉",24.0298,121.6267,"E",0,0,"湛藍月牙灣與鵝卵石灘，花蓮最經典的海景。","","七星潭"],["石梯坪","sea","花蓮縣","豐濱鄉",23.4878,121.511,"E",0,0,"白色珊瑚礁岩與壺穴，站在岩石上看太平洋。","","石梯坪"],["三仙台","sea","台東縣","成功鎮",23.1236,121.4115,"E",0,0,"八拱跨海步道連接小島，是看日出的好地方。","","三仙台"],["多良車站","sea","台東縣","太麻里鄉",22.5048,120.9627,"E",0,0,"號稱台灣最美車站，火車在山與海之間經過。","","多良車站"],["高美濕地","sea","台中市","清水區",24.3121,120.5493,"W",0,0,"木棧道延伸到濕地中央，夕陽倒影與風車剪影超浪漫。","查好退潮與日落時間再出發","高美濕地"],["梧棲漁港","sea","台中市","梧棲區",24.2967,120.5153,"W",0,0,"逛觀光魚市吃海鮮，再沿著港邊散步看船。","","梧棲漁港"],["王功漁港","sea","彰化縣","芳苑鄉",23.967,120.3227,"W",0,0,"紅白芳苑燈塔與蚵棚夕照，彰化海線的私房景點。","","王功漁港"],["成龍濕地","sea","雲林縣","口湖鄉",23.5586,120.1625,"W",0,0,"海水倒灌形成的濕地，水中藝術裝置與夕陽很好拍。","","成龍濕地"],["東石漁人碼頭","sea","嘉義縣","東石鄉",23.4497,120.1395,"W",0,0,"海景步道與巨大地景裝置，傍晚吹海風很舒服。","","東石漁人碼頭"],["布袋高跟鞋教堂","sea","嘉義縣","布袋鎮",23.3778,120.1488,"W",0,0,"玻璃打造的巨大高跟鞋，旁邊就是布袋好美里海岸。","","高跟鞋教堂"],["井仔腳瓦盤鹽田","sea","台南市","北門區",23.2593,120.1083,"W",0,0,"百年瓦盤鹽田，夕陽灑在鹽田與鹽山上閃閃發光。","","井仔腳瓦盤鹽田"],["七股鹽山","sea","台南市","七股區",23.1544,120.1037,"W",0,0,"爬上白色的鹽山，吃鹹冰棒，童年回憶景點。","","七股鹽山"],["四草綠色隧道","sea","台南市","安南區",23.0213,120.1418,"W",0,0,"搭竹筏穿過紅樹林綠色隧道，被稱作台版亞馬遜。","","四草綠色隧道"],["漁光島","sea","台南市","安平區",22.9769,120.1574,"W",0,0,"木麻黃林與月牙灣沙灘，台南人最愛的看夕陽地點。","","漁光島"],["黃金海岸","sea","台南市","南區",22.945,120.1747,"W",0,0,"長長的海岸線與夕陽，晚上還有海邊咖啡可以坐。","","黃金海岸 台南"],["興達港情人碼頭","sea","高雄市","茄萣區",22.879,120.211,"W",0,0,"以浪漫為主題的碼頭，拱橋與夕陽很適合散步。","","興達港情人碼頭"],["蚵仔寮漁港","sea","高雄市","梓官區",22.7262,120.2544,"W",0,0,"現撈海鮮的觀光魚市，下午拍賣最熱鬧。","","蚵仔寮漁港"],["西子灣","sea","高雄市","鼓山區",22.6247,120.2659,"W",0,0,"海景步道與西子灣夕照，高雄經典的約會路線。","","西子灣"],["旗津海岸公園","sea","高雄市","旗津區",22.6058,120.2683,"W",0,0,"搭渡輪過去，騎腳踏車沿海、玩沙、吃海產。","","旗津海岸公園"],["大鵬灣","sea","屏東縣","東港鎮",22.4477,120.4787,"W",0,0,"潟湖邊的自行車道與鵬灣跨海大橋，風景開闊。","","大鵬灣國家風景區"],["白沙灣","sea","屏東縣","恆春鎮",21.9351,120.7135,"W",0,0,"細白沙灘與清澈海水，電影《少年Pi》取景地。","","白沙灣 恆春"],["後壁湖漁港","sea","屏東縣","恆春鎮",21.9445,120.7456,"W",0,0,"現切生魚片與半潛艇，墾丁最熱鬧的漁港。","","後壁湖漁港"],["貓鼻頭","sea","屏東縣","恆春鎮",21.92,120.735,"W",0,0,"台灣海峽與巴士海峽的分界點，看珊瑚礁海岸。","","貓鼻頭公園"],["鵝鑾鼻燈塔","sea","屏東縣","恆春鎮",21.902,120.853,"W",0,0,"台灣最南端的白色燈塔，草地、海景與藍天。","","鵝鑾鼻燈塔"],["龍磐公園","sea","屏東縣","恆春鎮",21.9278,120.847,"W",0,0,"斷崖草原面對太平洋，晚上還能看滿天星空。","","龍磐公園"],["佳樂水","sea","屏東縣","滿州鄉",21.99,120.865,"W",0,0,"千奇百怪的海蝕岩與浪花，墾丁東岸的秘境感。","","佳樂水"],["陽明山擎天崗","mtn","台北市","士林區",25.1663,121.5747,"W",8,0,"大片草原與牛群，散步就能看到遼闊的山景。","","擎天崗"],["十分瀑布","mtn","新北市","平溪區",25.0477,121.7874,"W",10,0,"台灣版尼加拉瀑布，順遊十分老街放天燈。","","十分瀑布"],["烏來瀑布","mtn","新北市","烏來區",24.8463,121.5503,"W",10,0,"搭台車看瀑布，泡溫泉、吃原住民風味餐。","","烏來瀑布"],["石門水庫","mtn","桃園市","龍潭區",24.81,121.245,"W",0,0,"湖光山色與環湖步道，吃一頓活魚三吃。","","石門水庫"],["龍騰斷橋","mtn","苗栗縣","三義鄉",24.3586,120.7732,"W",5,0,"紅磚拱橋遺跡藏在山林裡，四月還有油桐花。","","龍騰斷橋"],["太平山國家森林遊樂區","mtn","宜蘭縣","大同鄉",24.496,121.532,"Y",40,0,"雲霧繚繞的檜木林，搭蹦蹦車、走見晴懷古步道。","山路彎多，假日常管制，出發前查詢","太平山國家森林遊樂區"],["梅花湖","mtn","宜蘭縣","冬山鄉",24.6479,121.736,"Y",0,0,"湖中吊橋與環湖小路，可以騎雙人腳踏車。","","梅花湖"],["鯉魚潭","mtn","花蓮縣","壽豐鄉",23.9268,121.5052,"E",0,0,"山中湖泊，可以踩天鵝船，傍晚倒影很美。","","鯉魚潭 花蓮"],["六十石山","mtn","花蓮縣","富里鄉",23.2191,121.3176,"E",10,0,"八、九月金針花滿山遍野，像橘色地毯。","最佳季節為 8–9 月","六十石山"],["鹿野高台","mtn","台東縣","鹿野鄉",22.9129,121.1195,"E",0,0,"遼闊草原與熱氣球，俯瞰整片花東縱谷。","","鹿野高台"],["知本國家森林遊樂區","mtn","台東縣","卑南鄉",22.6973,120.9848,"E",3,0,"溫泉區旁的森林步道，泡湯加森林浴。","","知本國家森林遊樂區"],["武陵農場","mtn","台中市","和平區",24.3506,121.3091,"W",80,0,"高山上的農場，春天有櫻花、秋天有楓紅。","車程很長，建議早出發或安排過夜","武陵農場"],["新社花海","mtn","台中市","新社區",24.2024,120.8117,"W",12,0,"山城花海與莊園，秋冬花海季最熱鬧。","花海季約在 11–12 月","新社花海"],["東勢林場","mtn","台中市","東勢區",24.2799,120.8789,"W",12,0,"森林遊樂區，春天賞螢火蟲、平常散步很舒服。","","東勢林場"],["合歡山武嶺","mtn","南投縣","仁愛鄉",24.137,121.276,"W",70,0,"開車就能到台灣公路最高點，3275 公尺的雲海。","冬季可能下雪封路，注意高山症","武嶺"],["清境農場","mtn","南投縣","仁愛鄉",24.057,121.162,"W",45,0,"綿羊草原與歐風民宿，涼爽的高山牧場。","","清境農場"],["日月潭","mtn","南投縣","魚池鄉",23.866,120.915,"W",20,0,"台灣最美的湖，搭船、騎車、坐纜車。","","日月潭"],["溪頭自然教育園區","mtn","南投縣","鹿谷鄉",23.6747,120.796,"W",25,0,"大學池竹橋與柳杉林，平緩好走的森林浴。","","溪頭自然教育園區"],["杉林溪","mtn","南投縣","竹山鎮",23.6302,120.8041,"W",35,0,"四季花卉與瀑布，春天牡丹、鬱金香最有名。","","杉林溪森林生態渡假園區"],["集集綠色隧道","mtn","南投縣","集集鎮",23.8318,120.762,"W",5,0,"樟樹搭成的綠色隧道，順遊集集車站。","","集集綠色隧道"],["惠蓀林場","mtn","南投縣","仁愛鄉",24.089,121.035,"W",25,0,"中興大學的實驗林場，咖啡香與森林步道。","","惠蓀林場"],["古坑華山","mtn","雲林縣","古坑鄉",23.6,120.615,"W",10,0,"咖啡山城，在山邊喝咖啡看雲林平原夜景。","","華山 古坑"],["阿里山國家森林遊樂區","mtn","嘉義縣","阿里山鄉",23.51,120.803,"W",60,0,"神木、姊妹潭與森林小火車，看日出雲海。","山路長，建議清晨出發","阿里山國家森林遊樂區"],["奮起湖","mtn","嘉義縣","竹崎鄉",23.5048,120.696,"W",45,0,"山中老街、鐵道便當與老車站。","","奮起湖"],["太平雲梯","mtn","嘉義縣","梅山鄉",23.5579,120.5977,"W",30,0,"海拔千公尺的景觀吊橋，腳下就是雲海。","","太平雲梯"],["關子嶺溫泉","mtn","台南市","白河區",23.338,120.503,"W",5,0,"罕見的泥漿溫泉，加上水火同源奇景。","","關子嶺溫泉"],["烏山頭水庫","mtn","台南市","官田區",23.2054,120.3668,"W",0,0,"像珊瑚般的湖岸線，八田與一紀念園區也在這。","","烏山頭水庫風景區"],["虎頭埤","mtn","台南市","新化區",23.0283,120.3305,"W",0,0,"台灣第一座水庫，吊橋與環湖步道很好散步。","","虎頭埤風景區"],["田寮月世界","mtn","高雄市","田寮區",22.889,120.395,"W",0,0,"像月球表面的泥岩惡地，夕陽時分很夢幻。","","月世界 田寮"],["澄清湖","mtn","高雄市","鳥松區",22.659,120.356,"W",0,0,"九曲橋與湖光山色，高雄市區旁的大公園。","","澄清湖"],["茂林國家風景區","mtn","高雄市","茂林區",22.885,120.662,"W",15,0,"紫蝶幽谷與峽谷山景，冬天能看紫斑蝶。","紫蝶季約 11 月–隔年 3 月","茂林 紫蝶幽谷"],["不老溫泉","mtn","高雄市","六龜區",23.055,120.693,"W",25,0,"六龜山中的溫泉鄉，泡湯看山景。","","不老溫泉"],["山川琉璃吊橋","mtn","屏東縣","瑪家鄉",22.7093,120.6534,"W",3,0,"橫跨隘寮溪的琉璃珠吊橋，視野壯闊。","","山川琉璃吊橋"],["雙流國家森林遊樂區","mtn","屏東縣","獅子鄉",22.2269,120.8181,"W",3,0,"溪流與森林，平坦步道就能走到瀑布。","","雙流國家森林遊樂區"],["四重溪溫泉","mtn","屏東縣","車城鄉",22.087,120.745,"W",0,0,"日治時期四大名湯之一，順遊墾丁。","","四重溪溫泉"],["墾丁森林遊樂區","mtn","屏東縣","恆春鎮",21.962,120.813,"W",5,0,"熱帶季林與鐘乳石洞，還有高處看海的瞭望台。","","墾丁國家森林遊樂區"],["西門町","city","台北市","萬華區",25.0422,121.5079,"W",0,0,"台北的年輕潮流街區，電影、小吃、逛街一次滿足。","","西門町"],["信義商圈・台北101","city","台北市","信義區",25.0336,121.5647,"W",0,1,"百貨林立的信義區，登上101看台北夜景。","","台北101"],["九份老街","city","新北市","瑞芳區",25.1095,121.8445,"W",0,0,"山城階梯與紅燈籠，邊吃芋圓邊看海景。","","九份老街"],["淡水老街","city","新北市","淡水區",25.17,121.44,"W",0,0,"河岸夕陽、阿給和鐵蛋，散步到紅毛城。","","淡水老街"],["三峽老街","city","新北市","三峽區",24.9356,121.37,"W",0,0,"紅磚巴洛克立面，加上祖師廟與金牛角。","","三峽老街"],["大溪老街","city","桃園市","大溪區",24.883,121.286,"W",0,0,"巴洛克牌樓街屋，吃豆干逛木藝。","","大溪老街"],["內灣老街","city","新竹縣","橫山鄉",24.7055,121.182,"W",5,0,"鐵道小鎮老街，野薑花粽與客家小吃。","","內灣老街"],["南庄老街","city","苗栗縣","南庄鄉",24.598,121.0,"W",5,0,"桂花巷與老郵局，山城客家小鎮。","","南庄老街"],["羅東夜市","city","宜蘭縣","羅東鎮",24.678,121.77,"Y",0,0,"宜蘭最有名的夜市，順遊羅東林業文化園區。","","羅東夜市"],["花蓮東大門夜市","city","花蓮縣","花蓮市",23.975,121.611,"E",0,0,"集合原住民、外省、客家風味的大型夜市。","","東大門夜市"],["台東鐵花村","city","台東縣","台東市",22.754,121.152,"E",0,0,"熱氣球燈海下聽現場音樂，台東的慢活夜晚。","","鐵花村"],["審計新村・勤美綠園道","city","台中市","西區",24.143,120.663,"W",0,0,"文青小店與綠園道，逛完勤美誠品再喝杯咖啡。","","審計新村"],["台中車站・宮原眼科","city","台中市","中區",24.138,120.683,"W",0,0,"舊城區的老建築與冰淇淋名店，散步逛綠川。","","宮原眼科"],["逢甲夜市","city","台中市","西屯區",24.175,120.646,"W",0,0,"全台最大夜市之一，創意小吃的發源地。","","逢甲夜市"],["三井 Outlet 台中港","city","台中市","梧棲區",24.273,120.515,"W",0,0,"港邊的大型 Outlet，還有摩天輪看海景。","","三井OUTLET PARK 台中港"],["鹿港老街","city","彰化縣","鹿港鎮",24.057,120.434,"W",0,0,"摸乳巷、九曲巷與傳統小吃，一府二鹿三艋舺。","","鹿港老街"],["西螺延平老街","city","雲林縣","西螺鎮",23.799,120.463,"W",0,0,"日式巴洛克街屋與醬油老店，順遊西螺大橋。","","延平老街 西螺"],["北港老街","city","雲林縣","北港鎮",23.57,120.302,"W",0,0,"朝天宮前的熱鬧老街，吃鴨肉飯、買麻油。","","北港朝天宮"],["嘉義文化路夜市","city","嘉義市","東區",23.479,120.449,"W",0,0,"雞肉飯、砂鍋魚頭，嘉義人的美食大街。","","文化路夜市"],["神農街・正興街","city","台南市","中西區",22.997,120.197,"W",0,0,"老屋小店與巷弄文創，台南最有味道的散步路線。","","神農街"],["林百貨・國華街","city","台南市","中西區",22.992,120.202,"W",0,1,"日治時期的百貨公司，逛完去國華街吃小吃。","","林百貨"],["安平老街","city","台南市","安平區",23.001,120.162,"W",0,0,"台灣第一街，蝦餅、蜜餞、劍獅巷弄。","","安平老街"],["新化老街","city","台南市","新化區",23.038,120.31,"W",0,0,"巴洛克立面的老街屋，人少好拍照。","","新化老街"],["三井 Outlet 台南","city","台南市","歸仁區",22.925,120.285,"W",0,1,"高鐵台南站旁的室內 Outlet，下雨也能逛。","","三井OUTLET PARK 台南"],["駁二藝術特區","city","高雄市","鹽埕區",22.62,120.282,"W",0,0,"港邊倉庫改造的文創園區，展覽、市集與大型裝置。","","駁二藝術特區"],["哈瑪星","city","高雄市","鼓山區",22.621,120.273,"W",0,0,"鐵道文化園區與老街區，騎腳踏車吹海風。","","哈瑪星台灣鐵道館"],["夢時代購物中心","city","高雄市","前鎮區",22.595,120.307,"W",0,1,"屋頂有摩天輪的大型商場，旁邊就是港灣夜景。","","夢時代購物中心"],["漢神巨蛋・瑞豐夜市","city","高雄市","左營區",22.669,120.303,"W",0,1,"白天逛百貨，晚上走到對面的瑞豐夜市。","","漢神巨蛋"],["義大世界購物廣場","city","高雄市","大樹區",22.729,120.404,"W",0,1,"Outlet 與遊樂園相連，可以逛一整天。","","義大世界購物廣場"],["旗山老街","city","高雄市","旗山區",22.887,120.483,"W",0,0,"巴洛克街屋與香蕉冰，順遊旗山車站。","","旗山老街"],["勝利星村","city","屏東縣","屏東市",22.6786,120.4846,"W",0,0,"日式眷村改造的文創聚落，咖啡店與小書店。","","勝利星村"],["東港華僑市場","city","屏東縣","東港鎮",22.46,120.45,"W",0,0,"黑鮪魚的故鄉，現點現切海鮮與熟食攤。","","東港華僑市場"],["恆春古城","city","屏東縣","恆春鎮",22.001,120.746,"W",0,0,"保存最完整的清代城門，城內有老街小吃。","","恆春古城"],["國立故宮博物院","cult","台北市","士林區",25.1024,121.5485,"W",0,1,"翠玉白菜與肉形石，世界級的中華文物收藏。","","國立故宮博物院"],["中正紀念堂","cult","台北市","中正區",25.0346,121.5218,"W",0,1,"白色牌樓與藍頂建築，整點看衛兵交接。","","中正紀念堂"],["十三行博物館","cult","新北市","八里區",25.158,121.399,"W",0,1,"史前考古博物館，建築本身就很有特色。","","十三行博物館"],["鶯歌陶瓷博物館","cult","新北市","鶯歌區",24.953,121.353,"W",0,1,"台灣陶瓷的歷史，順遊鶯歌老街捏陶。","","鶯歌陶瓷博物館"],["黃金博物館","cult","新北市","瑞芳區",25.108,121.86,"W",5,1,"摸一摸 220 公斤的大金磚，看金瓜石礦業歷史。","","黃金博物館"],["新竹市玻璃工藝博物館","cult","新竹市","東區",24.802,120.979,"W",0,1,"玻璃藝術展覽與吹玻璃表演，就在新竹公園旁。","","新竹市玻璃工藝博物館"],["臺灣客家文化館","cult","苗栗縣","銅鑼鄉",24.4629,120.7708,"W",0,1,"建築優美的客家文化園區，還有大片草地。","","臺灣客家文化館"],["國立傳統藝術中心","cult","宜蘭縣","五結鄉",24.686,121.824,"Y",0,0,"仿古街道與傳統工藝，看戲、DIY 都好玩。","","國立傳統藝術中心"],["蘭陽博物館","cult","宜蘭縣","頭城鎮",24.869,121.832,"Y",0,1,"像單面山的斜屋頂建築，介紹宜蘭的山與海。","","蘭陽博物館"],["史前文化博物館","cult","台東縣","台東市",22.7597,121.0917,"E",0,1,"台灣史前與原住民文化，建築與園區都很美。","","國立臺灣史前文化博物館"],["國立自然科學博物館","cult","台中市","北區",24.157,120.666,"W",0,1,"恐龍、太空劇場與植物園溫室，大人也看得很開心。","","國立自然科學博物館"],["國立台灣美術館","cult","台中市","西區",24.141,120.663,"W",0,1,"大型當代藝術展與戶外雕塑公園，免費參觀。","","國立臺灣美術館"],["台中國家歌劇院","cult","台中市","西屯區",24.163,120.64,"W",0,1,"伊東豊雄設計的曲牆建築，空中花園很好拍。","","臺中國家歌劇院"],["彰化扇形車庫","cult","彰化縣","彰化市",24.083,120.542,"W",0,0,"全台唯一仍在使用的扇形車庫，看火車轉盤。","","彰化扇形車庫"],["鹿港龍山寺","cult","彰化縣","鹿港鎮",24.052,120.432,"W",0,0,"國定古蹟，精緻的八卦藻井木雕。","","鹿港龍山寺"],["中台禪寺","cult","南投縣","埔里鎮",24.0091,120.9444,"W",5,1,"壯觀的現代佛寺建築，內部莊嚴寧靜。","","中台禪寺"],["埔里紙教堂","cult","南投縣","埔里鎮",23.9414,120.9271,"W",5,0,"從日本神戶移築而來的紙教堂，還有生態池。","","紙教堂 埔里"],["九族文化村","cult","南投縣","魚池鄉",23.865,120.9486,"W",20,0,"原住民文化與遊樂設施，搭纜車到日月潭。","","九族文化村"],["雲林布袋戲館","cult","雲林縣","虎尾鎮",23.709,120.432,"W",0,1,"日治時期郡役所改建，認識布袋戲的歷史。","","雲林布袋戲館"],["故宮南院","cult","嘉義縣","太保市",23.471,120.293,"W",0,1,"亞洲藝術文化博物館，建築與園區湖景都很美。","","國立故宮博物院南部院區"],["檜意森活村","cult","嘉義市","東區",23.487,120.456,"W",0,0,"日式檜木宿舍群，換上浴衣散步拍照。","","檜意森活村"],["奇美博物館","cult","台南市","仁德區",22.935,120.226,"W",0,1,"歐風白色宮殿，收藏小提琴、名畫與雕塑。","","奇美博物館"],["十鼓文創園區","cult","台南市","仁德區",22.9385,120.2291,"W",0,0,"舊糖廠改造，看擊鼓表演、玩溜滑梯。","","十鼓文創園區"],["國立臺灣歷史博物館","cult","台南市","安南區",23.0584,120.2352,"W",0,1,"一次看懂台灣歷史，旁邊還有濕地生態園區。","","國立臺灣歷史博物館"],["赤崁樓","cult","台南市","中西區",22.9975,120.2025,"W",0,0,"荷蘭時期的古蹟，晚上點燈很有氣氛。","","赤崁樓"],["台灣文學館・孔廟","cult","台南市","中西區",22.991,120.204,"W",0,1,"日治時期的台南州廳，對面就是全台首學孔廟。","","國立臺灣文學館"],["安平古堡・億載金城","cult","台南市","安平區",23.0015,120.1605,"W",0,0,"荷蘭時期的熱蘭遮城與清代砲台，一次看兩處。","","安平古堡"],["蕭壠文化園區","cult","台南市","佳里區",23.166,120.175,"W",0,0,"舊糖廠倉庫改造的藝術村，展覽與兒童美術館。","","蕭壠文化園區"],["國立科學工藝博物館","cult","高雄市","三民區",22.64,120.323,"W",0,1,"超大的科學互動展館，下雨天的好去處。","","國立科學工藝博物館"],["衛武營國家藝術文化中心","cult","高雄市","鳳山區",22.623,120.342,"W",0,1,"世界最大單一屋頂劇院，像榕樹一樣的波浪建築。","","衛武營國家藝術文化中心"],["佛陀紀念館","cult","高雄市","大樹區",22.755,120.441,"W",0,1,"壯觀的大佛與八塔，室內展館也很豐富。","","佛陀紀念館"],["高雄市立美術館","cult","高雄市","鼓山區",22.657,120.287,"W",0,1,"內惟埤旁的美術館，展覽與周邊公園都很好逛。","","高雄市立美術館"],["打狗英國領事館","cult","高雄市","鼓山區",22.62,120.267,"W",0,0,"山坡上的紅磚洋樓，俯瞰高雄港與西子灣。","","打狗英國領事館文化園區"],["蓮池潭・龍虎塔","cult","高雄市","左營區",22.68,120.295,"W",0,0,"從龍口進虎口出，湖畔廟宇與春秋閣。","","龍虎塔"],["美濃客家文物館","cult","高雄市","美濃區",22.9113,120.5574,"W",0,1,"認識客家文化與油紙傘，順遊美濃湖、吃粄條。","","美濃客家文物館"],["橋頭糖廠","cult","高雄市","橋頭區",22.757,120.308,"W",0,0,"台灣第一座現代化糖廠，吃冰、看老宿舍。","","橋頭糖廠"],["國立海洋生物博物館","cult","屏東縣","車城鄉",22.045,120.698,"W",0,1,"海底隧道、白鯨與企鵝，屏東最好的雨天選擇。","","國立海洋生物博物館"],["台灣原住民族文化園區","cult","屏東縣","瑪家鄉",22.704,120.638,"W",3,0,"認識台灣原住民各族的傳統家屋與歌舞。","","臺灣原住民族文化園區"],["六堆客家文化園區","cult","屏東縣","內埔鄉",22.6599,120.5602,"W",0,0,"斗笠造型的建築與大草原，適合散步野餐。","","六堆客家文化園區"]];
+const spots = RAW.map((a, i) => ({ no: i + 1, name: a[0], cat: a[1], city: a[2], dist: a[3], lat: a[4], lng: a[5],
+  zone: a[6], slow: a[7], indoor: !!a[8], desc: a[9], tip: a[10], q: a[11] }));
+
+const CATS = {
+  sea:  { label: "海洋景觀", icon: "i-sea",  color: "var(--sea)" },
+  mtn:  { label: "山區風光", icon: "i-mtn",  color: "var(--mtn)" },
+  city: { label: "市區景點", icon: "i-city", color: "var(--city)" },
+  cult: { label: "人文探索", icon: "i-cult", color: "var(--cult)" },
+};
+// [縣市, [[鄉鎮區, 緯度, 經度], ...]]，座標為各區的區公所或市中心（OpenStreetMap）
+const TOWNS = [["臺北市",[["萬華區",25.0319,121.4993],["中正區",25.0324,121.5183],["中山區",25.0644,121.5335],["大同區",25.066,121.5155],["大安區",25.0265,121.5344],["信義區",25.0333,121.5669],["南港區",25.0546,121.6066],["松山區",25.0499,121.5773],["文山區",24.9898,121.5705],["北投區",25.1324,121.5014],["內湖區",25.0697,121.589],["士林區",25.0918,121.5242]]],["新北市",[["淡水區",25.1813,121.4531],["三芝區",25.258,121.5009],["石門區",25.2913,121.5677],["金山區",25.2219,121.6362],["萬里區",25.1812,121.6887],["汐止區",25.0642,121.6587],["深坑區",25.0023,121.6157],["瑞芳區",25.1089,121.8098],["平溪區",25.0258,121.7391],["雙溪區",25.0334,121.8657],["石碇區",24.9917,121.6586],["貢寮區",25.022,121.9101],["新店區",24.9674,121.5419],["中和區",24.9994,121.499],["板橋區",25.0097,121.4591],["永和區",25.0092,121.5201],["土城區",24.9722,121.4433],["烏來區",24.864,121.5513],["樹林區",24.9907,121.4205],["三峽區",24.9343,121.3689],["三重區",25.0615,121.4881],["蘆洲區",25.0849,121.4737],["五股區",25.0827,121.4382],["八里區",25.1457,121.4035],["新莊區",25.0358,121.4502],["林口區",25.0775,121.3916],["泰山區",25.0589,121.4308],["鶯歌區",24.9599,121.3538],["坪林區",24.9374,121.7112]]],["基隆市",[["暖暖區",25.1003,121.736],["七堵區",25.0978,121.7164],["仁愛區",25.1251,121.7368],["中正區",25.141,121.7591],["信義區",25.1295,121.7512],["中山區",25.1528,121.7296],["安樂區",25.121,121.7233]]],["桃園市",[["中壢區",24.9654,121.2249],["八德區",24.9287,121.2847],["蘆竹區",25.0506,121.2917],["龜山區",24.9925,121.3378],["桃園區",24.9939,121.3017],["大園區",25.0639,121.1953],["復興區",24.8154,121.3519],["大溪區",24.8806,121.287],["龍潭區",24.8639,121.2164],["平鎮區",24.9458,121.2184],["新屋區",24.9722,121.1058],["楊梅區",24.9076,121.1459],["觀音區",25.0364,121.0823]]],["新竹市",[["北區",24.8157,120.9705],["東區",24.8047,120.9736],["香山區",24.7972,120.9425]]],["新竹縣",[["湖口鄉",24.9006,121.0468],["新豐鄉",24.9023,120.9866],["竹北市",24.8397,121.0041],["尖石鄉",24.705,121.2013],["五峰鄉",24.633,121.1193],["關西鎮",24.7926,121.1759],["橫山鄉",24.7167,121.1413],["北埔鄉",24.702,121.0567],["寶山鄉",24.7654,120.991],["峨眉鄉",24.6887,121.0196],["新埔鎮",24.828,121.0712],["竹東鎮",24.7362,121.0911],["芎林鄉",24.7749,121.0791]]],["苗栗縣",[["泰安鄉",24.4475,120.9077],["南庄鄉",24.6022,120.9991],["通霄鎮",24.491,120.6841],["大湖鄉",24.423,120.866],["獅潭鄉",24.5398,120.9205],["銅鑼鄉",24.487,120.7879],["後龍鎮",24.6136,120.7919],["卓蘭鎮",24.313,120.8246],["公館鄉",24.5061,120.8283],["三義鄉",24.4131,120.7704],["苑裡鎮",24.4397,120.6535],["頭份市",24.6865,120.9127],["頭屋鄉",24.5774,120.8508],["三灣鄉",24.6549,120.9602],["造橋鄉",24.6384,120.865],["西湖鄉",24.5568,120.7571],["苗栗市",24.5615,120.8192],["竹南鎮",24.6837,120.8734]]],["臺中市",[["太平區",24.1265,120.7185],["大里區",24.0994,120.6779],["南區",24.1171,120.6636],["新社區",24.2341,120.8095],["東區",24.1366,120.7039],["霧峰區",24.0617,120.7003],["烏日區",24.1047,120.6238],["大肚區",24.1511,120.5454],["龍井區",24.1927,120.5458],["梧棲區",24.2549,120.5316],["清水區",24.2686,120.5598],["大安區",24.3461,120.5865],["大甲區",24.3489,120.6224],["外埔區",24.332,120.6544],["后里區",24.3049,120.7107],["東勢區",24.2586,120.8278],["和平區",24.1748,120.8835],["北屯區",24.1823,120.6863],["豐原區",24.2422,120.7185],["石岡區",24.275,120.7804],["神岡區",24.2578,120.6615],["潭子區",24.2095,120.7052],["大雅區",24.2291,120.6478],["西屯區",24.1653,120.6337],["沙鹿區",24.2334,120.5662],["西區",24.1414,120.671],["南屯區",24.1346,120.6444],["北區",24.166,120.6823],["中區",24.1438,120.6795]]],["彰化縣",[["伸港鄉",24.1473,120.4869],["和美鎮",24.1081,120.4945],["線西鄉",24.1308,120.4709],["鹿港鎮",24.0567,120.4351],["彰化市",24.0808,120.5423],["秀水鄉",24.0352,120.503],["福興鄉",24.048,120.4439],["花壇鄉",24.0297,120.5381],["芬園鄉",24.0136,120.629],["大村鄉",23.9932,120.5474],["埔鹽鄉",24.0001,120.4636],["芳苑鄉",23.924,120.3203],["二林鎮",23.8996,120.3744],["溪湖鎮",23.9597,120.4799],["埔心鄉",23.9529,120.5437],["員林市",23.9588,120.5745],["埤頭鄉",23.8914,120.4622],["田尾鄉",23.8922,120.5261],["永靖鄉",23.9245,120.5479],["社頭鄉",23.8969,120.5858],["田中鎮",23.8613,120.581],["二水鄉",23.8065,120.6189],["北斗鎮",23.8713,120.5218],["溪州鄉",23.8511,120.4987],["大城鄉",23.8523,120.3208],["竹塘鄉",23.8605,120.4278]]],["南投縣",[["信義鄉",23.6968,120.8542],["國姓鄉",24.0414,120.8578],["竹山鎮",23.758,120.6728],["集集鎮",23.8286,120.7864],["鹿谷鄉",23.7459,120.7536],["名間鄉",23.8383,120.7029],["埔里鎮",23.9667,120.9691],["仁愛鄉",24.0244,121.1335],["水里鄉",23.8114,120.856],["魚池鄉",23.8964,120.9361],["中寮鄉",23.8789,120.7667],["南投市",23.91,120.6837],["草屯鎮",23.9738,120.6803]]],["雲林縣",[["北港鎮",23.5755,120.3024],["口湖鄉",23.5824,120.1854],["水林鄉",23.5726,120.2459],["元長鄉",23.6495,120.3151],["大埤鄉",23.6459,120.4305],["古坑鄉",23.6426,120.562],["東勢鄉",23.6747,120.2527],["麥寮鄉",23.7538,120.252],["四湖鄉",23.6377,120.2257],["臺西鄉",23.7004,120.1945],["二崙鄉",23.7713,120.4151],["土庫鎮",23.6778,120.3926],["崙背鄉",23.7588,120.3539],["斗六市",23.7051,120.5373],["斗南鎮",23.6797,120.4791],["林內鄉",23.7559,120.613],["莿桐鄉",23.7608,120.5024],["虎尾鎮",23.7082,120.4453],["西螺鎮",23.798,120.466],["褒忠鄉",23.6942,120.3105]]],["嘉義市",[["西區",23.4643,120.4349],["東區",23.4784,120.4536]]],["嘉義縣",[["大埔鄉",23.2968,120.5937],["中埔鄉",23.425,120.5225],["水上鄉",23.4281,120.3979],["番路鄉",23.4653,120.555],["阿里山鄉",23.4712,120.7147],["竹崎鄉",23.5228,120.5507],["梅山鄉",23.5849,120.5572],["民雄鄉",23.5515,120.4286],["大林鎮",23.6038,120.4713],["太保市",23.4596,120.3329],["鹿草鄉",23.4108,120.3084],["溪口鄉",23.6022,120.3938],["朴子市",23.4653,120.2462],["新港鄉",23.5518,120.3476],["六腳鄉",23.4939,120.2911],["義竹鄉",23.3363,120.2434],["布袋鎮",23.3783,120.1671],["東石鄉",23.4585,120.1537]]],["臺南市",[["南區",22.9611,120.1884],["仁德區",22.9722,120.2515],["東區",22.9801,120.2242],["中西區",22.9922,120.206],["歸仁區",22.9672,120.2938],["永康區",23.0263,120.257],["北區",23.0139,120.1999],["關廟區",22.9624,120.3345],["龍崎區",22.9633,120.3647],["左鎮區",23.058,120.4073],["新化區",23.0395,120.3084],["新市區",23.079,120.2951],["南化區",23.0413,120.4777],["山上區",23.1044,120.3519],["善化區",23.1323,120.2969],["安定區",23.1222,120.2373],["玉井區",23.1222,120.4574],["大內區",23.1226,120.3563],["楠西區",23.1738,120.4876],["官田區",23.192,120.3165],["六甲區",23.2329,120.3522],["麻豆區",23.1817,120.2482],["西港區",23.1229,120.2021],["佳里區",23.1653,120.1773],["下營區",23.2354,120.2645],["柳營區",23.2796,120.3112],["東山區",23.3267,120.4041],["白河區",23.3515,120.4137],["後壁區",23.3667,120.3627],["新營區",23.3087,120.317],["鹽水區",23.3198,120.2664],["學甲區",23.2323,120.1803],["七股區",23.1405,120.14],["安南區",23.0471,120.1848],["安平區",22.9951,120.168],["將軍區",23.1993,120.1588],["北門區",23.2679,120.1257]]],["高雄市",[["鹽埕區",22.6247,120.2868],["鼓山區",22.6368,120.2812],["左營區",22.6905,120.2948],["楠梓區",22.7283,120.3262],["橋頭區",22.7575,120.3057],["三民區",22.6477,120.2996],["前金區",22.6276,120.2942],["苓雅區",22.6218,120.3123],["新興區",22.6311,120.31],["前鎮區",22.5864,120.3186],["旗津區",22.5906,120.2844],["小港區",22.5654,120.338],["鳳山區",22.6271,120.3628],["鳥松區",22.6599,120.3646],["仁武區",22.7011,120.3477],["大社區",22.73,120.3466],["岡山區",22.7974,120.2951],["燕巢區",22.7884,120.3622],["梓官區",22.7605,120.2673],["田寮區",22.87,120.3594],["大樹區",22.6934,120.4331],["林園區",22.5071,120.3949],["大寮區",22.6054,120.3954],["旗山區",22.8885,120.4835],["美濃區",22.8979,120.5415],["內門區",22.9434,120.4624],["路竹區",22.8553,120.2599],["阿蓮區",22.8837,120.327],["彌陀區",22.7829,120.2473],["永安區",22.8186,120.2253],["湖內區",22.9082,120.2115],["杉林區",22.9707,120.539],["六龜區",22.9979,120.6334],["甲仙區",23.0852,120.5915],["那瑪夏區",23.2175,120.6932],["桃源區",23.1592,120.7655],["茂林區",22.8862,120.6632],["茄萣區",22.9065,120.1825]]],["屏東縣",[["屏東市",22.6628,120.4916],["九如鄉",22.7398,120.4901],["里港鄉",22.7792,120.4945],["高樹鄉",22.8268,120.6002],["鹽埔鄉",22.7548,120.5728],["長治鄉",22.6771,120.5276],["麟洛鄉",22.6506,120.5273],["萬丹鄉",22.5898,120.4845],["竹田鄉",22.5847,120.544],["內埔鄉",22.612,120.5669],["三地門鄉",22.7884,120.6818],["瑪家鄉",22.6786,120.6801],["萬巒鄉",22.5729,120.5681],["泰武鄉",22.6037,120.6921],["霧臺鄉",22.7414,120.742],["來義鄉",22.5259,120.6336],["新埤鄉",22.47,120.5495],["潮州鎮",22.5505,120.5429],["南州鄉",22.4902,120.5098],["崁頂鄉",22.5148,120.5146],["春日鄉",22.3707,120.6288],["獅子鄉",22.2019,120.7046],["林邊鄉",22.434,120.5151],["佳冬鄉",22.4177,120.5515],["枋寮鄉",22.3668,120.5937],["枋山鄉",22.2639,120.6524],["牡丹鄉",22.1255,120.7709],["車城鄉",22.0739,120.7142],["恆春鎮",22.0027,120.7447],["滿州鄉",22.0209,120.8388],["東港鎮",22.464,120.4592],["新園鄉",22.544,120.4617]]],["宜蘭縣",[["員山鄉",24.7432,121.7234],["壯圍鄉",24.7468,121.786],["宜蘭市",24.752,121.7533],["礁溪鄉",24.8236,121.7713],["頭城鎮",24.8592,121.8233],["五結鄉",24.6846,121.7983],["南澳鄉",24.4667,121.8052],["大同鄉",24.6771,121.6079],["三星鄉",24.666,121.6532],["冬山鄉",24.6345,121.7923],["羅東鎮",24.677,121.7669],["蘇澳鎮",24.5946,121.8427]]],["花蓮縣",[["秀林鄉",24.1202,121.6261],["富里鄉",23.18,121.2501],["玉里鎮",23.3313,121.3215],["瑞穗鄉",23.4968,121.376],["卓溪鄉",23.3464,121.3035],["光復鄉",23.6691,121.4235],["鳳林鎮",23.7446,121.4517],["萬榮鄉",23.7147,121.411],["壽豐鄉",23.8707,121.5089],["豐濱鄉",23.5986,121.5221],["吉安鄉",23.973,121.5634],["花蓮市",23.9821,121.6068],["新城鄉",24.0391,121.6042]]],["臺東縣",[["大武鄉",22.3405,120.8902],["達仁鄉",22.2949,120.8841],["蘭嶼鄉 Ponso no Tao",22.0512,121.5469],["金峰鄉",22.5955,120.9713],["太麻里鄉",22.6154,121.0073],["臺東市",22.756,121.1457],["卑南鄉",22.7937,121.0778],["延平鄉",22.9024,121.0845],["鹿野鄉",22.914,121.136],["關山鎮",23.0474,121.1631],["池上鄉",23.1224,121.2151],["海端鄉",23.102,121.1766],["東河鄉",22.9702,121.3044],["成功鎮",23.1053,121.3804],["長濱鄉",23.315,121.4515]]]];
+const GH_URL = "https://jack1214w.github.io/travel-blindbox/";
+// 在 claude.ai 網址版裡會被包在框架中，那裡不能使用定位與外部路線服務
+const embedded = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const DEFAULT_ORIGIN = { name: "高科大楠梓校區", lat: 22.7263, lng: 120.3149, source: "default", note: "預設出發地" };
+const PRESET_ORIGINS = [
+  DEFAULT_ORIGIN,
+  { name: "高雄車站", lat: 22.6394, lng: 120.3025 },
+  { name: "高鐵左營站", lat: 22.6873, lng: 120.3075 },
+  { name: "屏東車站", lat: 22.6693, lng: 120.4867 },
+  { name: "台南車站", lat: 22.9971, lng: 120.2127 },
+  { name: "嘉義車站", lat: 23.4792, lng: 120.4413 },
+  { name: "台中車站", lat: 24.1373, lng: 120.6869 },
+  { name: "台北車站", lat: 25.0478, lng: 121.5170 },
+  { name: "花蓮車站", lat: 23.9930, lng: 121.6011 },
+  { name: "台東車站", lat: 22.7934, lng: 121.1230 },
+];
+const RANGES = {
+  time: { unit: "分鐘", label: "車程範圍", presets: [[0, 30, "30 分鐘內"], [30, 60, "30–60 分"], [60, 90, "1–1.5 小時"], [90, 120, "1.5–2 小時"], [120, 180, "2–3 小時"]] },
+  dist: { unit: "公里", label: "距離範圍", presets: [[0, 20, "20 公里內"], [20, 50, "20–50 公里"], [50, 100, "50–100 公里"], [100, 150, "100–150 公里"], [150, 200, "150–200 公里"]] },
+};
+
+// ---------- 儲存（失敗時只是不記住） ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("tbb." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("tbb." + k, JSON.stringify(v)); } catch (e) {} },
+};
+
+const saved = store.get("settings", {});
+const state = {
+  mode: saved.mode === "dist" ? "dist" : "time",
+  preset: Object.assign({ time: 1, dist: 1 }, saved.preset),
+  custom: Object.assign({ time: [60, 120], dist: [50, 120] }, saved.custom),
+  cats: Object.assign({ sea: true, mtn: true, city: true, cult: true }, saved.cats),
+  rain: !!saved.rain,
+  exVisited: saved.exVisited !== false,
+  origin: Object.assign({}, DEFAULT_ORIGIN),
+  routes: {},          // 名稱 -> { min, km }（路線服務結果）
+  routeStatus: "idle", // idle | loading | osrm | partial | est
+  est: {},
+  busy: false,
+};
+let visited = store.get("visited", {});   // 名稱 -> "2026-10-24"
+let recent = store.get("recent", []);     // 最近抽過的名稱
+const saveSettings = () => store.set("settings", { mode: state.mode, preset: state.preset, custom: state.custom, cats: state.cats, rain: state.rain, exVisited: state.exVisited });
+
+// ---------- 距離與車程估算（備援） ----------
+const rad = (d) => d * Math.PI / 180;
+function hav(a, b) {
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(x));
+}
+// 中央山脈擋在中間時，改走北宜／蘇花或南迴的路徑點
+const WP = { tp: { lat: 25.05, lng: 121.60 }, tc: { lat: 24.86, lng: 121.82 }, sa: { lat: 24.60, lng: 121.85 }, fl: { lat: 22.37, lng: 120.59 }, dw: { lat: 22.34, lng: 120.89 } };
+const LINKS = { WY: [[WP.tp, WP.tc]], WE: [[WP.fl, WP.dw], [WP.tp, WP.tc, WP.sa]], YE: [[WP.sa]] };
+function zoneOf(p) {
+  if (p.lat > 24.35 && p.lat < 24.98 && p.lng > 121.6) return "Y";
+  if ((p.lat < 24.4 && p.lng > 121.45) || (p.lat < 24.0 && p.lng > 121.2) || (p.lat < 23.3 && p.lng > 121.0) || (p.lat < 22.75 && p.lng > 120.88)) return "E";
+  return "W";
+}
+// 恆春半島、花東與蘇花一帶的省道較慢，另外以 50 km/h 計算
+const isPeninsula = (p) => p.lat < 22.42 && p.lng > 120.55;
+const isSlowRoad = (p) => p === WP.sa || zoneOf(p) === "E" || isPeninsula(p);
+function viaOptions(a, b, o, s) {
+  if (a === b) return a === "W" && isPeninsula(o) !== isPeninsula(s) ? [[WP.fl]] : [[]];
+  if (LINKS[a + b]) return LINKS[a + b];
+  if (LINKS[b + a]) return LINKS[b + a].map((r) => r.slice().reverse());
+  return [[]];
+}
+function estimate(o, s) {
+  const oz = zoneOf(o);
+  let best = null;
+  for (const v of viaOptions(oz, s.zone, o, s)) {
+    const pts = [o, ...v, s];
+    let fast = 0, coast = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const d = hav(pts[i], pts[i + 1]), road = d * (1.2 + 0.15 * Math.exp(-d / 30));
+      if (isSlowRoad(pts[i]) && isSlowRoad(pts[i + 1])) coast += road; else fast += road;
+    }
+    const km = fast + coast + s.slow * 0.6;
+    if (!best || km < best.km) best = { km, fast, coast };
+  }
+  const f = Math.max(best.fast + s.slow * 0.6 - s.slow, 0);
+  const h = Math.min(f, 5) / 30 + Math.min(Math.max(f - 5, 0), 15) / 55 + Math.max(f - 20, 0) / 88 + best.coast / 50 + s.slow / 32;
+  return { km: best.km, min: h * 60 + 5 + (oz !== s.zone ? 10 : 0) };
+}
+function recomputeEstimates() {
+  state.est = {};
+  spots.forEach((s) => { state.est[s.name] = estimate(state.origin, s); });
+}
+const metric = (s) => state.routes[s.name] || state.est[s.name];
+
+// ---------- 路線服務（OSRM，實際道路） ----------
+let routeToken = 0;
+async function fetchRoutes() {
+  const token = ++routeToken;
+  const o = state.origin;
+  const cacheKey = "routes2." + o.lat.toFixed(3) + "," + o.lng.toFixed(3);
+  const cached = store.get(cacheKey, null);
+  if (cached && Date.now() - cached.t < 7 * 864e5 && Object.keys(cached.r).length) {
+    state.routes = cached.r;
+    state.routeStatus = Object.keys(cached.r).length === spots.length ? "osrm" : "partial";
+    renderAll();
+    return;
+  }
+  state.routes = {};
+  state.routeStatus = "loading";
+  renderAll();
+  const result = {};
+  const chunks = [];
+  for (let i = 0; i < spots.length; i += 80) chunks.push(spots.slice(i, i + 80));
+  await Promise.all(chunks.map(async (ch) => {
+    const coords = [o.lng.toFixed(5) + "," + o.lat.toFixed(5)].concat(ch.map((s) => s.lng + "," + s.lat)).join(";");
+    const url = "https://router.project-osrm.org/table/v1/driving/" + coords + "?sources=0&annotations=duration,distance";
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const res = await fetch(url, { signal: ctl.signal });
+      const j = await res.json();
+      if (j.code !== "Ok") return;
+      ch.forEach((s, k) => {
+        const dur = j.durations[0][k + 1], dis = j.distances[0][k + 1];
+        // 路線服務不含路況，稍微放寬並加上停車時間
+        if (dur != null && dis != null && dis > 0) result[s.name] = { min: dur / 60 * 1.05 + 3, km: dis / 1000 };
+      });
+    } catch (e) { /* 連不上就用估算 */ } finally { clearTimeout(timer); }
+  }));
+  if (token !== routeToken) return;
+  const n = Object.keys(result).length;
+  state.routes = result;
+  state.routeStatus = n === 0 ? "est" : n === spots.length ? "osrm" : "partial";
+  if (n) store.set(cacheKey, { t: Date.now(), r: result });
+  renderAll();
+}
+
+// ---------- 出發地 ----------
+// remember：手動選的出發地會記住，下次打開直接使用
+function setOrigin(o, remember) {
+  state.origin = Object.assign({}, o);
+  if (remember) store.set("origin", state.origin);
+  recomputeEstimates();
+  $("#originName").textContent = o.name;
+  $("#originNote").textContent = o.note || "";
+  fetchRoutes();
+  renderAll();
+}
+function deniedText() {
+  if (embedded) return "這個網址版無法使用定位，這是平台的安全限制。請用上方的縣市與鄉鎮區選單選出發地。";
+  if (location.protocol === "file:") return "瀏覽器不允許本機檔案使用定位（Safari 常見）。請改用 Chrome 開啟這個檔案，或用上方選單選出發地。";
+  return "定位權限沒有開啟。請在瀏覽器的網站設定裡允許「位置」，並確認手機或電腦的定位服務已開啟；也可以用上方選單選出發地。";
+}
+function locate(manual) {
+  const msg = $("#originMsg");
+  const restoreNote = () => {
+    $("#originNote").textContent = state.origin.source === "default" ? "無法自動定位，使用預設出發地" : (state.origin.note || "");
+  };
+  if (!("geolocation" in navigator)) {
+    if (manual) msg.textContent = "這個瀏覽器不支援定位，請用上方選單選出發地。";
+    restoreNote();
+    return;
+  }
+  $("#originNote").textContent = "定位中…";
+  let done = false;
+  const fail = (text) => {
+    if (done) return; done = true;
+    if (manual) { msg.textContent = text; $("#ghTip").hidden = !embedded; }
+    restoreNote();
+  };
+  const guard = setTimeout(() => fail("等太久還沒抓到位置。請移到收訊較好的地方再試一次，或用上方選單選出發地。"), 15000);
+  try {
+    navigator.geolocation.getCurrentPosition((p) => {
+      if (done) return; done = true; clearTimeout(guard);
+      const o = { name: "我目前的位置", lat: p.coords.latitude, lng: p.coords.longitude, source: "gps", note: "已使用 GPS 定位" };
+      if (!inTaiwan(o)) { if (manual) msg.textContent = "目前位置不在台灣本島，請用上方選單選出發地。"; restoreNote(); return; }
+      msg.textContent = "";
+      $("#originPreset").value = "";
+      setOrigin(o, false);
+    }, (err) => {
+      clearTimeout(guard);
+      fail(err && err.code === 1 ? deniedText() : "目前抓不到位置訊號。請確認定位服務已開啟、移到收訊較好的地方再試一次，或用上方選單選出發地。");
+    }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 });
+  } catch (e) { clearTimeout(guard); fail(deniedText()); }
+}
+const inTaiwan = (p) => p.lat > 21.8 && p.lat < 25.4 && p.lng > 119.9 && p.lng < 122.1;
+
+// ---------- 篩選與抽籤 ----------
+function currentRange() {
+  const r = RANGES[state.mode], i = state.preset[state.mode];
+  if (i >= r.presets.length) {
+    const [lo, hi] = state.custom[state.mode];
+    return [Number(lo) || 0, hi === "" || hi == null || isNaN(Number(hi)) ? null : Number(hi)];
+  }
+  return r.presets[i].slice(0, 2);
+}
+function inRange(s) {
+  const m = metric(s), v = state.mode === "time" ? m.min : m.km;
+  const [lo, hi] = currentRange();
+  return v >= lo && (hi == null || v <= hi);
+}
+function candidates(ignoreCat) {
+  return spots.filter((s) => (ignoreCat || state.cats[s.cat]) && (!state.rain || s.indoor) && !(state.exVisited && visited[s.name]) && inRange(s));
+}
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(pool, n) {
+  let fresh = pool.filter((s) => !recent.includes(s.name));
+  if (fresh.length < n) fresh = pool.slice();
+  shuffle(fresh);
+  if (n === 1) return fresh.slice(0, 1);
+  const out = [];
+  for (const s of fresh) { if (out.length === n) break; if (!out.some((o) => o.cat === s.cat)) out.push(s); }
+  for (const s of fresh) { if (out.length === n) break; if (!out.includes(s)) out.push(s); }
+  return out;
+}
+
+// ---------- 格式 ----------
+function fmtMin(m) {
+  const r = Math.max(5, Math.round(m / 5) * 5);
+  if (r < 60) return r + " 分鐘";
+  const h = Math.floor(r / 60), mm = r % 60;
+  return h + " 小時" + (mm ? " " + mm + " 分" : "");
+}
+const fmtKm = (k) => (k < 10 ? k.toFixed(1) : Math.round(k)) + " 公里";
+const pad = (n) => String(n).padStart(2, "0");
+const todayStr = () => { const d = new Date(); return d.getFullYear() + "." + pad(d.getMonth() + 1) + "." + pad(d.getDate()); };
+const $ = (s) => document.querySelector(s);
+const icon = (id) => '<svg aria-hidden="true"><use href="#' + id + '"/></svg>';
+
+// ---------- 畫面 ----------
+function renderRange() {
+  const r = RANGES[state.mode];
+  $("#modeTime").setAttribute("aria-checked", state.mode === "time");
+  $("#modeDist").setAttribute("aria-checked", state.mode === "dist");
+  $("#rangeLabel").textContent = r.label;
+  const idx = state.preset[state.mode];
+  const labels = r.presets.map((p) => p[2]).concat("自訂");
+  $("#rangeChips").innerHTML = labels.map((l, i) =>
+    '<button class="chip" role="radio" data-i="' + i + '" aria-checked="' + (i === idx) + '">' + l + "</button>").join("");
+  const isCustom = idx >= r.presets.length;
+  $("#customRange").hidden = !isCustom;
+  $("#customUnit").textContent = r.unit;
+  const [lo, hi] = state.custom[state.mode];
+  $("#customMin").value = lo;
+  $("#customMax").value = hi == null ? "" : hi;
+  $("#customMin").step = $("#customMax").step = state.mode === "time" ? 10 : 5;
+}
+function renderCats() {
+  const base = candidates(true);
+  $("#cats").innerHTML = Object.entries(CATS).map(([k, c]) => {
+    const n = base.filter((s) => s.cat === k).length;
+    return '<button class="cat" data-cat="' + k + '" aria-pressed="' + !!state.cats[k] + '" style="--c:' + c.color + '">' +
+      '<span class="ic">' + icon(c.icon) + '</span><span class="t"><b>' + c.label + "</b><small>範圍內 " + n + " 個</small></span></button>";
+  }).join("");
+}
+function renderPool() {
+  const n = candidates().length;
+  $("#poolCount").textContent = n;
+  const disabled = state.busy || n === 0;
+  $("#drawOne").disabled = disabled;
+  $("#drawThree").disabled = state.busy || n < 2;
+  $("#gift").disabled = disabled;
+  $("#emptyMsg").textContent = n === 0 ? "這個條件下盒子是空的，放寬範圍或多選幾個類別試試看。" : "";
+  const dot = $("#routeDot"), txt = $("#routeText");
+  dot.className = "dot";
+  if (state.routeStatus === "loading") { dot.classList.add("loading"); txt.textContent = "正在依實際道路計算車程，先用估算值"; }
+  else if (state.routeStatus === "osrm") { dot.classList.add("ok"); txt.textContent = "車程依實際道路計算（不含即時路況）"; }
+  else if (state.routeStatus === "partial") { dot.classList.add("ok"); txt.textContent = "大部分依實際道路計算，少數為估算值"; }
+  else txt.textContent = "目前使用估算車程（連不上路線服務）";
+}
+function renderFootprints() {
+  const entries = Object.entries(visited).sort((a, b) => (a[1] < b[1] ? 1 : -1));
+  $("#fpCount").textContent = entries.length + " / " + spots.length;
+  $("#fpBar").style.width = (entries.length / spots.length * 100).toFixed(1) + "%";
+  $("#fpEmpty").hidden = entries.length > 0;
+  $("#fpClear").hidden = entries.length === 0;
+  const byName = Object.fromEntries(spots.map((s) => [s.name, s]));
+  $("#fpList").innerHTML = entries.map(([name, date]) => {
+    const s = byName[name]; if (!s) return "";
+    return '<li style="--c:' + CATS[s.cat].color + '"><span class="sw"></span><span class="nm">' + name +
+      '</span><span class="dt">' + date.replace(/-/g, ".") + '</span><button data-unvisit="' + name + '" aria-label="移除 ' + name + '">' + icon("i-x") + "</button></li>";
+  }).join("");
+}
+function renderAll() { renderRange(); renderCats(); renderPool(); renderFootprints(); refreshTicketStats(); }
+
+let lastPicks = [];
+function mapsUrl(s) {
+  const o = state.origin;
+  return "https://www.google.com/maps/dir/?api=1&origin=" + o.lat.toFixed(5) + "," + o.lng.toFixed(5) +
+    "&destination=" + encodeURIComponent(s.q + " " + s.city + s.dist) + "&travelmode=driving";
+}
+function ticketHTML(s, multi) {
+  const c = CATS[s.cat], m = metric(s), osrm = !!state.routes[s.name];
+  const timeFirst = state.mode === "time";
+  const a = '<div class="t-stat"><span>車程</span><b class="' + (timeFirst ? "big" : "") + '" data-stat="min">' + fmtMin(m.min) + "</b></div>";
+  const b = '<div class="t-stat"><span>距離</span><b class="' + (timeFirst ? "" : "big") + '" data-stat="km">' + fmtKm(m.km) + "</b></div>";
+  const v = visited[s.name];
+  return '<article class="ticket" data-name="' + s.name + '" style="--c:' + c.color + '">' +
+    '<span class="chosen-badge">' + icon("i-heart") + "就決定是這裡</span>" +
+    '<div class="t-main"><div class="t-top"><span class="pill">' + icon(c.icon) + c.label + '</span><span class="t-no">NO. ' + String(s.no).padStart(3, "0") + "</span></div>" +
+    '<h3 class="t-name">' + s.name + '</h3><p class="t-place">' + s.city + "・" + s.dist + (s.indoor ? "・室內" : "") + "</p>" +
+    '<p class="t-desc">' + s.desc + "</p>" +
+    (s.tip ? '<p class="t-tip">' + icon("i-alert") + s.tip + "</p>" : "") +
+    '<div class="t-btns"><a class="t-btn primary" href="' + mapsUrl(s) + '" target="_blank" rel="noopener">' + icon("i-nav") + "Google 地圖導航</a>" +
+    (multi ? '<button class="t-btn" data-choose="' + s.name + '">' + icon("i-heart") + "選這個</button>" : "") +
+    '<button class="t-btn' + (v ? " done" : "") + '" data-visit="' + s.name + '">' + icon("i-check") + (v ? "已去過・" + v.slice(5).replace("-", "/") : "我們去過了") + "</button></div></div>" +
+    '<div class="t-stub">' + (timeFirst ? a + b : b + a) + '<span class="t-src" data-stat="src">' + (osrm ? "依實際道路計算" : "估算值") + "</span>" +
+    '<span class="t-date">' + todayStr() + " 出發</span></div></article>";
+}
+function refreshTicketStats() {
+  document.querySelectorAll(".ticket").forEach((el) => {
+    const s = spots.find((x) => x.name === el.dataset.name); if (!s) return;
+    const m = metric(s);
+    el.querySelector('[data-stat="min"]').textContent = fmtMin(m.min);
+    el.querySelector('[data-stat="km"]').textContent = fmtKm(m.km);
+    el.querySelector('[data-stat="src"]').textContent = state.routes[s.name] ? "依實際道路計算" : "估算值";
+    el.querySelector(".t-btn.primary").href = mapsUrl(s);
+  });
+}
+function showResults(picks, poolSize) {
+  lastPicks = picks;
+  const multi = picks.length > 1;
+  $("#resultsTitle").textContent = multi ? (picks.length === 3 ? "三" : "兩") + "張車票，挑一張吧" : "今天就去 " + picks[0].name + "！";
+  $("#resultsSub").textContent = multi ? "從 " + poolSize + " 個地點裡抽出" : "從 " + poolSize + " 個地點裡抽中";
+  $("#tickets").innerHTML = picks.map((s) => ticketHTML(s, multi)).join("");
+  $("#results").hidden = false;
+}
+
+// ---------- 開盒動畫 ----------
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+function burst() {
+  if (reduce) return;
+  const zone = $("#giftzone");
+  const colors = ["var(--rose)", "var(--box)", "var(--ribbon-shade)", "var(--sea)", "var(--cult)", "var(--city)"];
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement("span");
+    el.className = "burst";
+    const ang = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 90;
+    el.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+    el.style.setProperty("--dy", Math.sin(ang) * dist - 40 + "px");
+    el.style.setProperty("--rot", (Math.random() * 120 - 60) + "deg");
+    el.style.setProperty("--c", colors[i % colors.length]);
+    const sz = 10 + Math.random() * 12;
+    el.style.width = el.style.height = sz + "px";
+    el.innerHTML = icon("i-heart");
+    zone.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
+}
+async function draw(n) {
+  if (state.busy) return;
+  const pool = candidates();
+  if (!pool.length) return;
+  state.busy = true; renderPool();
+  const gift = $("#gift"), zone = $("#giftzone");
+  gift.classList.remove("reset");
+  gift.classList.add("shake");
+  await wait(900);
+  gift.classList.remove("shake");
+  gift.classList.add("open"); zone.classList.add("open");
+  burst();
+  await wait(420);
+  const picks = pick(pool, Math.min(n, pool.length));
+  recent = picks.map((s) => s.name).concat(recent.filter((x) => !picks.some((p) => p.name === x))).slice(0, 12);
+  store.set("recent", recent);
+  showResults(picks, pool.length);
+  if (matchMedia("(max-width: 860px)").matches) $("#results").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  await wait(900);
+  gift.classList.remove("open"); zone.classList.remove("open");
+  gift.classList.add("reset");
+  state.busy = false; renderPool();
+}
+
+// ---------- 事件 ----------
+function bind() {
+  $("#today").textContent = todayStr() + " 週" + "日一二三四五六"[new Date().getDay()];
+  $("#originPreset").innerHTML = '<option value="">選擇出發地…</option>' + PRESET_ORIGINS.map((p, i) => '<option value="' + i + '">' + p.name + (i === 0 ? "（預設）" : "") + "</option>").join("");
+
+  $("#originToggle").addEventListener("click", () => {
+    const p = $("#originPanel"); p.hidden = !p.hidden;
+    $("#originToggle").setAttribute("aria-expanded", !p.hidden);
+    $("#originToggle").textContent = p.hidden ? "更換" : "收合";
+  });
+  $("#useGps").addEventListener("click", () => { $("#originMsg").textContent = ""; locate(true); });
+  $("#ghLink").href = GH_URL;
+  $("#ghTip").hidden = !embedded;
+
+  // 縣市與鄉鎮區（依筆畫排序）
+  const coll = new Intl.Collator("zh-Hant-TW");
+  const townsOf = (ci) => TOWNS[ci][1].slice().sort((a, b) => coll.compare(a[0], b[0]));
+  const fillTowns = (ci) => {
+    $("#originTown").innerHTML = '<option value="">選擇鄉鎮區…</option>' +
+      townsOf(ci).map((t) => '<option value="' + t[0] + '">' + t[0] + "</option>").join("");
+  };
+  $("#originCounty").innerHTML = TOWNS.map((c, i) => '<option value="' + i + '">' + c[0] + "</option>").join("");
+  $("#originCounty").value = String(Math.max(0, TOWNS.findIndex((c) => c[0] === "高雄市")));
+  fillTowns(Number($("#originCounty").value));
+  $("#originCounty").addEventListener("change", (e) => fillTowns(Number(e.target.value)));
+  $("#originTown").addEventListener("change", (e) => {
+    if (!e.target.value) return;
+    const ci = Number($("#originCounty").value);
+    const t = TOWNS[ci][1].find((x) => x[0] === e.target.value);
+    $("#originMsg").textContent = "";
+    $("#originPreset").value = "";
+    setOrigin({ name: TOWNS[ci][0] + t[0], lat: t[1], lng: t[2], source: "town", note: "以區公所／市中心計算" }, true);
+  });
+
+  $("#originPreset").addEventListener("change", (e) => {
+    if (e.target.value === "") return;
+    const i = Number(e.target.value);
+    const o = Object.assign({}, PRESET_ORIGINS[i], { source: i === 0 ? "default" : "preset", note: i === 0 ? "預設出發地" : "從常用地點選擇" });
+    $("#originMsg").textContent = "";
+    $("#originTown").value = "";
+    setOrigin(o, true);
+  });
+  $("#applyCoords").addEventListener("click", () => {
+    const m = $("#originCoords").value.match(/(-?\d+(?:\.\d+)?)\s*[,，\s]\s*(-?\d+(?:\.\d+)?)/);
+    const msg = $("#originMsg");
+    if (!m) { msg.textContent = "看不懂這組座標，請用「緯度, 經度」的格式，例如 22.7263, 120.3149。"; return; }
+    let lat = Number(m[1]), lng = Number(m[2]);
+    if (lat > 90) [lat, lng] = [lng, lat];
+    const o = { name: "自訂座標 " + lat.toFixed(4) + ", " + lng.toFixed(4), lat, lng, source: "coords", note: "使用貼上的座標" };
+    if (!inTaiwan(o)) { msg.textContent = "這組座標不在台灣本島範圍內，請再確認一次。"; return; }
+    msg.textContent = "";
+    $("#originPreset").value = "";
+    $("#originTown").value = "";
+    setOrigin(o, true);
+  });
+
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    state.mode = b.dataset.mode; saveSettings(); renderAll();
+  }));
+  $("#rangeChips").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    state.preset[state.mode] = Number(b.dataset.i); saveSettings(); renderAll();
+  });
+  const onCustom = () => {
+    const lo = $("#customMin").value, hi = $("#customMax").value;
+    state.custom[state.mode] = [lo === "" ? 0 : Math.max(0, Number(lo)), hi === "" ? null : Math.max(0, Number(hi))];
+    saveSettings(); renderCats(); renderPool();
+  };
+  $("#customMin").addEventListener("input", onCustom);
+  $("#customMax").addEventListener("input", onCustom);
+
+  $("#cats").addEventListener("click", (e) => {
+    const b = e.target.closest(".cat"); if (!b) return;
+    state.cats[b.dataset.cat] = !state.cats[b.dataset.cat]; saveSettings(); renderCats(); renderPool();
+  });
+  $("#catsAll").addEventListener("click", () => { Object.keys(CATS).forEach((k) => (state.cats[k] = true)); saveSettings(); renderCats(); renderPool(); });
+  $("#rain").checked = state.rain;
+  $("#exVisited").checked = state.exVisited;
+  $("#rain").addEventListener("change", (e) => { state.rain = e.target.checked; saveSettings(); renderCats(); renderPool(); });
+  $("#exVisited").addEventListener("change", (e) => { state.exVisited = e.target.checked; saveSettings(); renderCats(); renderPool(); });
+
+  $("#drawOne").addEventListener("click", () => draw(1));
+  $("#gift").addEventListener("click", () => draw(1));
+  $("#drawThree").addEventListener("click", () => draw(3));
+
+  $("#tickets").addEventListener("click", (e) => {
+    const vb = e.target.closest("[data-visit]");
+    if (vb) {
+      const name = vb.dataset.visit;
+      if (visited[name]) delete visited[name];
+      else { const d = new Date(); visited[name] = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+      store.set("visited", visited);
+      const v = visited[name];
+      vb.classList.toggle("done", !!v);
+      vb.innerHTML = icon("i-check") + (v ? "已去過・" + v.slice(5).replace("-", "/") : "我們去過了");
+      renderCats(); renderPool(); renderFootprints();
+      return;
+    }
+    const cb = e.target.closest("[data-choose]");
+    if (cb) {
+      const name = cb.dataset.choose;
+      document.querySelectorAll("#tickets .ticket").forEach((t) => {
+        t.classList.toggle("chosen", t.dataset.name === name);
+        t.classList.toggle("dim", t.dataset.name !== name);
+      });
+      $("#resultsTitle").textContent = "就決定是 " + name + " 了！";
+      $("#resultsSub").textContent = "改變心意的話，點其他車票的「選這個」";
+    }
+  });
+
+  $("#fpList").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-unvisit]"); if (!b) return;
+    delete visited[b.dataset.unvisit]; store.set("visited", visited);
+    renderAll(); syncTicketVisit();
+  });
+  let clearArmed = null;
+  $("#fpClear").addEventListener("click", () => {
+    const b = $("#fpClear");
+    if (!clearArmed) {
+      b.textContent = "確定要清除？再按一次";
+      clearArmed = setTimeout(() => { clearArmed = null; b.textContent = "清除全部紀錄"; }, 4000);
+      return;
+    }
+    clearTimeout(clearArmed); clearArmed = null; b.textContent = "清除全部紀錄";
+    visited = {}; store.set("visited", visited); renderAll(); syncTicketVisit();
+  });
+}
+function syncTicketVisit() {
+  document.querySelectorAll("[data-visit]").forEach((vb) => {
+    const v = visited[vb.dataset.visit];
+    vb.classList.toggle("done", !!v);
+    vb.innerHTML = icon("i-check") + (v ? "已去過・" + v.slice(5).replace("-", "/") : "我們去過了");
+  });
+}
+
+// ---------- 啟動 ----------
+bind();
+$("#foot").textContent = "共收錄 " + spots.length + " 個台灣本島景點。車程為參考值，出發前請以導航的即時路況為準。";
+const savedOrigin = store.get("origin", null);
+if (savedOrigin && typeof savedOrigin.lat === "number" && inTaiwan(savedOrigin)) {
+  state.origin = Object.assign({}, savedOrigin, { note: savedOrigin.source === "default" ? "預設出發地" : "上次選擇的出發地" });
+}
+$("#originName").textContent = state.origin.name;
+$("#originNote").textContent = state.origin.note;
+recomputeEstimates();
+renderAll();
+fetchRoutes();
+locate(false);
+})();
+</script>
+
+</body>
+</html>
